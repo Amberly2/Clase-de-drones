@@ -35,8 +35,9 @@ def arm_and_takeoff(TargetAltitude): #TargetAltitude is for specifying any altit
 			break
         time.sleep(1)
 
-def set_velocity_body(drone, vx, vy, vz):
-	msg = vehicle.message_factory.set_position_target_local_ned_encode(
+#Sends mavlink velocity command in body frame
+def set_velocity_body(drone, vx, vy, vz): #Velocity in x, y and z
+	msg = drone.message_factory.set_position_target_local_ned_encode(
 	        0, 
 	        0, 0, 
 	        mavutil.mavlink.MAV_FRAME_BODY_NED,
@@ -45,8 +46,8 @@ def set_velocity_body(drone, vx, vy, vz):
 	        vx, vy, vz, #VELOCITY
 	        0, 0, 0,    #ACCELERATIONS
 	        0, 0)
-        vehicle.send_mavlink(msg)
-        vehicle.flush()
+        drone.send_mavlink(msg)
+        drone.flush()
 
 #Key event function
 def key(event):
@@ -57,16 +58,17 @@ def key(event):
 
     else:
         if event.keysym == 'Up':
-             set_velocity_body(drone, 5, 0, 0)
+             set_velocity_body(drone, 5, 0, 0) #Here we indicate the control of movements using the keyboard. vz is always in 0 so there are no changes in altitude.
         elif event.keysym == 'Down':
-             set_velocity_body(drone, -5, 0, 0)
+             set_velocity_body(drone, -5, 0, 0) 
         elif event.keysym == 'Left':
-             set_velocity_body(drone, 0, -5, 0)
+             set_velocity_body(drone, 0, -5, 0) 
         elif event.keysym == 'Right':
              set_velocity_body(drone, 0, 5,0)
 
 arm_and_takeoff(20) #Here we indicate altitude
 
+#Reads the keyboard with tkinter
 root = tk.Tk()
 print("Control the drone with the arrow keys. Press r for RTL mode")
 root.bind_all('<Key>', key)
